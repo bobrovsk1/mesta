@@ -1,29 +1,5 @@
-# dependencies
-node_modules
-
-# env
-.env
-
-# uploads
-uploads
-
-# logs
-logs
-*.log
-
-# macOS
 .DS_Store
-
-# build
+node_modules
+.env
+.env.local
 dist
-build
-
-# vscode
-.vscode
-
-# pm2
-.pm2
-
-# temp
-tmp
-temp
