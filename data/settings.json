@@ -1,0 +1,39 @@
+{
+  "theme": {
+    "activeSeason": "summer",
+    "seasons": {
+      "summer": {
+        "label": "Лето",
+        "topGlow": "rgba(255, 196, 88, 0.24)",
+        "bottomGlow": "rgba(96, 169, 110, 0.18)",
+        "accent": "#c96031",
+        "accentDeep": "#8b391a",
+        "surface": "rgba(255, 251, 245, 0.9)"
+      },
+      "autumn": {
+        "label": "Осень",
+        "topGlow": "rgba(214, 133, 61, 0.28)",
+        "bottomGlow": "rgba(151, 83, 45, 0.16)",
+        "accent": "#b45b2f",
+        "accentDeep": "#7b3418",
+        "surface": "rgba(255, 248, 241, 0.92)"
+      },
+      "winter": {
+        "label": "Зима",
+        "topGlow": "rgba(167, 213, 255, 0.26)",
+        "bottomGlow": "rgba(100, 138, 198, 0.14)",
+        "accent": "#4a83c4",
+        "accentDeep": "#2d5b97",
+        "surface": "rgba(248, 252, 255, 0.9)"
+      },
+      "spring": {
+        "label": "Весна",
+        "topGlow": "rgba(177, 223, 136, 0.24)",
+        "bottomGlow": "rgba(255, 183, 137, 0.14)",
+        "accent": "#5c9d47",
+        "accentDeep": "#33692a",
+        "surface": "rgba(251, 255, 246, 0.9)"
+      }
+    }
+  }
+}
