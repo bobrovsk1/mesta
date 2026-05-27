@@ -36,47 +36,6 @@ function getPlaceImages(place) {
   return [];
 }
 
-function formatWeatherHourLabel(unixSeconds, timezoneOffsetSeconds = 0) {
-  const shifted = new Date((unixSeconds + timezoneOffsetSeconds) * 1000);
-  const hours = String(shifted.getUTCHours()).padStart(2, "0");
-  const minutes = String(shifted.getUTCMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
-
-function normalizeOpenWeatherPayload(payload) {
-  const currentWeather = payload.current?.weather?.[0] || {};
-  const timezoneOffset = Number(payload.timezone_offset || 0);
-
-  return {
-    provider: "OpenWeatherMap",
-    timezoneOffset,
-    current: {
-      temp: Math.round(Number(payload.current?.temp ?? 0)),
-      windSpeed: Math.round(Number(payload.current?.wind_speed ?? 0)),
-      icon: currentWeather.icon
-        ? `https://openweathermap.org/img/wn/${currentWeather.icon}@2x.png`
-        : "",
-      description: String(currentWeather.description || "").trim(),
-      observedAt: payload.current?.dt || null,
-    },
-    hourly: Array.isArray(payload.hourly)
-      ? payload.hourly.slice(1, 4).map((item) => {
-          const weather = item.weather?.[0] || {};
-          return {
-            time: item.dt,
-            label: formatWeatherHourLabel(item.dt, timezoneOffset),
-            temp: Math.round(Number(item.temp ?? 0)),
-            windSpeed: Math.round(Number(item.wind_speed ?? 0)),
-            icon: weather.icon
-              ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png`
-              : "",
-            description: String(weather.description || "").trim(),
-          };
-        })
-      : [],
-  };
-}
-
 function readSessionToken() {
   try {
     return window.localStorage.getItem(SESSION_STORAGE_KEY) || "";
@@ -751,8 +710,6 @@ export default function App() {
   const [weatherByPlace, setWeatherByPlace] = useState({});
   const [weatherLoadingId, setWeatherLoadingId] = useState(null);
   const [weatherErrorByPlace, setWeatherErrorByPlace] = useState({});
-  const [weatherClientKey, setWeatherClientKey] = useState("");
-
   const hasSession = Boolean(readSessionToken());
   const authRequired = !hasSession || !profile.nickname;
   const selectedPlace = useMemo(
@@ -778,9 +735,6 @@ export default function App() {
         setGlobalError("");
         const settings = await apiRequest("/api/settings/public");
         setTheme(settings.theme);
-
-        const weatherConfig = await apiRequest("/api/weather/config");
-        setWeatherClientKey(weatherConfig.apiKey || "");
 
         const placesResponse = await apiRequest("/api/places");
         setPlaces(placesResponse.items);
@@ -986,46 +940,10 @@ export default function App() {
           return next;
         });
       })
-      .catch(async (error) => {
+      .catch((error) => {
         if (cancelled) {
           return;
         }
-
-        if (weatherClientKey) {
-          try {
-            const url = new URL("https://api.openweathermap.org/data/3.0/onecall");
-            url.searchParams.set("lat", String(selectedPlace.lat));
-            url.searchParams.set("lon", String(selectedPlace.lng));
-            url.searchParams.set("appid", weatherClientKey);
-            url.searchParams.set("units", "metric");
-            url.searchParams.set("lang", "ru");
-            url.searchParams.set("exclude", "minutely,daily,alerts");
-
-            const response = await fetch(url);
-            const payload = await response.json().catch(() => ({}));
-            if (!response.ok) {
-              throw new Error(payload?.message || "weather_fetch_failed");
-            }
-
-            if (cancelled) {
-              return;
-            }
-
-            setWeatherByPlace((current) => ({
-              ...current,
-              [cacheKey]: normalizeOpenWeatherPayload(payload),
-            }));
-            setWeatherErrorByPlace((current) => {
-              const next = { ...current };
-              delete next[cacheKey];
-              return next;
-            });
-            return;
-          } catch {
-            // fall through to standard error state
-          }
-        }
-
         setWeatherErrorByPlace((current) => ({
           ...current,
           [cacheKey]: error.message || "Ошибка погоды",
@@ -1040,7 +958,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [selectedPlace, weatherByPlace, weatherClientKey]);
+  }, [selectedPlace, weatherByPlace]);
 
   function openProfileEdit() {
     setProfileMenuOpen(false);

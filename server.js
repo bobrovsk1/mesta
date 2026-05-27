@@ -36,6 +36,36 @@ const contentTypes = {
 };
 
 const weatherCache = new Map();
+const OPEN_METEO_WEATHER_CODES = {
+  0: "Ясно",
+  1: "Преимущественно ясно",
+  2: "Переменная облачность",
+  3: "Пасмурно",
+  45: "Туман",
+  48: "Туман с инеем",
+  51: "Слабая морось",
+  53: "Морось",
+  55: "Сильная морось",
+  56: "Слабая ледяная морось",
+  57: "Ледяная морось",
+  61: "Слабый дождь",
+  63: "Дождь",
+  65: "Сильный дождь",
+  66: "Слабый ледяной дождь",
+  67: "Ледяной дождь",
+  71: "Слабый снег",
+  73: "Снег",
+  75: "Сильный снег",
+  77: "Снежные зерна",
+  80: "Кратковременный слабый дождь",
+  81: "Кратковременный дождь",
+  82: "Кратковременный сильный дождь",
+  85: "Слабый снегопад",
+  86: "Сильный снегопад",
+  95: "Гроза",
+  96: "Гроза с небольшим градом",
+  99: "Гроза с сильным градом",
+};
 
 function loadEnvFile(filePath) {
   if (!fssync.existsSync(filePath)) {
@@ -65,9 +95,6 @@ function loadEnvFile(filePath) {
 
 loadEnvFile(path.join(__dirname, ".env"));
 loadEnvFile(path.join(__dirname, ".env.local"));
-
-const OPENWEATHER_API_KEY =
-  process.env.OPENWEATHER_API_KEY || process.env.OPENWEATHERMAP_API_KEY || "";
 
 const seedPlaces = [
   {
@@ -274,11 +301,14 @@ function ensureFiniteCoordinate(value, label) {
   return number;
 }
 
-function formatHourLabel(unixSeconds, timezoneOffsetSeconds) {
-  const shifted = new Date((unixSeconds + timezoneOffsetSeconds) * 1000);
-  const hours = String(shifted.getUTCHours()).padStart(2, "0");
-  const minutes = String(shifted.getUTCMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
+function formatOpenMeteoHourLabel(isoString) {
+  const value = cleanString(isoString);
+  const timePart = value.split("T")[1] || "";
+  return timePart.slice(0, 5) || "--:--";
+}
+
+function getOpenMeteoWeatherDescription(code) {
+  return OPEN_METEO_WEATHER_CODES[Number(code)] || "Неизвестная погода";
 }
 
 function isValidUrl(value) {
@@ -449,23 +479,26 @@ async function buildPlacesResponse(userId) {
 }
 
 async function fetchWeatherByCoords(lat, lng) {
-  if (!OPENWEATHER_API_KEY) {
-    throw new Error("WEATHER_NOT_CONFIGURED");
-  }
-
   const cacheKey = `${lat.toFixed(3)}:${lng.toFixed(3)}`;
   const cached = weatherCache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.data;
   }
 
-  const weatherUrl = new URL("https://api.openweathermap.org/data/3.0/onecall");
-  weatherUrl.searchParams.set("lat", String(lat));
-  weatherUrl.searchParams.set("lon", String(lng));
-  weatherUrl.searchParams.set("appid", OPENWEATHER_API_KEY);
-  weatherUrl.searchParams.set("units", "metric");
-  weatherUrl.searchParams.set("lang", "ru");
-  weatherUrl.searchParams.set("exclude", "minutely,daily,alerts");
+  const weatherUrl = new URL("https://api.open-meteo.com/v1/forecast");
+  weatherUrl.searchParams.set("latitude", String(lat));
+  weatherUrl.searchParams.set("longitude", String(lng));
+  weatherUrl.searchParams.set(
+    "current",
+    "temperature_2m,wind_speed_10m,weather_code"
+  );
+  weatherUrl.searchParams.set(
+    "hourly",
+    "temperature_2m,wind_speed_10m,weather_code"
+  );
+  weatherUrl.searchParams.set("forecast_days", "1");
+  weatherUrl.searchParams.set("timezone", "auto");
+  weatherUrl.searchParams.set("wind_speed_unit", "ms");
 
   const response = await fetch(weatherUrl);
   const payload = await response.json().catch(() => ({}));
@@ -474,35 +507,43 @@ async function fetchWeatherByCoords(lat, lng) {
     throw new Error(payload?.message || "WEATHER_FETCH_FAILED");
   }
 
-  const currentWeather = payload.current?.weather?.[0] || {};
-  const timezoneOffset = Number(payload.timezone_offset || 0);
+  const hourlyTimes = Array.isArray(payload.hourly?.time) ? payload.hourly.time : [];
+  const hourlyTemps = Array.isArray(payload.hourly?.temperature_2m)
+    ? payload.hourly.temperature_2m
+    : [];
+  const hourlyWindSpeeds = Array.isArray(payload.hourly?.wind_speed_10m)
+    ? payload.hourly.wind_speed_10m
+    : [];
+  const hourlyWeatherCodes = Array.isArray(payload.hourly?.weather_code)
+    ? payload.hourly.weather_code
+    : [];
+  const currentTime = cleanString(payload.current?.time);
+  const currentTimeIndex = hourlyTimes.findIndex((value) => value === currentTime);
+  const startIndex = currentTimeIndex >= 0 ? currentTimeIndex + 1 : 0;
+  const hourly = [];
+
+  for (let index = startIndex; index < hourlyTimes.length && hourly.length < 3; index += 1) {
+    hourly.push({
+      time: hourlyTimes[index],
+      label: formatOpenMeteoHourLabel(hourlyTimes[index]),
+      temp: Math.round(Number(hourlyTemps[index] ?? 0)),
+      windSpeed: Math.round(Number(hourlyWindSpeeds[index] ?? 0)),
+      icon: "",
+      description: getOpenMeteoWeatherDescription(hourlyWeatherCodes[index]),
+    });
+  }
+
   const normalized = {
-    provider: "OpenWeatherMap",
-    timezoneOffset,
+    provider: "Open-Meteo",
+    timezoneOffset: 0,
     current: {
-      temp: Math.round(Number(payload.current?.temp ?? 0)),
-      windSpeed: Math.round(Number(payload.current?.wind_speed ?? 0)),
-      icon: currentWeather.icon
-        ? `https://openweathermap.org/img/wn/${currentWeather.icon}@2x.png`
-        : "",
-      description: cleanString(currentWeather.description),
-      observedAt: payload.current?.dt || null,
+      temp: Math.round(Number(payload.current?.temperature_2m ?? 0)),
+      windSpeed: Math.round(Number(payload.current?.wind_speed_10m ?? 0)),
+      icon: "",
+      description: getOpenMeteoWeatherDescription(payload.current?.weather_code),
+      observedAt: currentTime || null,
     },
-    hourly: Array.isArray(payload.hourly)
-      ? payload.hourly.slice(1, 4).map((item) => {
-          const weather = item.weather?.[0] || {};
-          return {
-            time: item.dt,
-            label: formatHourLabel(item.dt, timezoneOffset),
-            temp: Math.round(Number(item.temp ?? 0)),
-            windSpeed: Math.round(Number(item.wind_speed ?? 0)),
-            icon: weather.icon
-              ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png`
-              : "",
-            description: cleanString(weather.description),
-          };
-        })
-      : [],
+    hourly,
   };
 
   weatherCache.set(cacheKey, {
@@ -544,14 +585,6 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === "GET" && pathname === "/api/weather/config") {
-      json(res, 200, {
-        hasApiKey: Boolean(OPENWEATHER_API_KEY),
-        apiKey: OPENWEATHER_API_KEY || "",
-      });
-      return;
-    }
-
     if (req.method === "GET" && pathname === "/api/weather") {
       const lat = ensureFiniteCoordinate(url.searchParams.get("lat"), "широта");
       const lng = ensureFiniteCoordinate(url.searchParams.get("lng"), "долгота");
@@ -560,14 +593,6 @@ const server = http.createServer(async (req, res) => {
         const weather = await fetchWeatherByCoords(lat, lng);
         json(res, 200, weather);
       } catch (error) {
-        if (error.message === "WEATHER_NOT_CONFIGURED") {
-          json(res, 503, {
-            error: "Погода на сервере пока не настроена",
-            code: "weather_not_configured",
-          });
-          return;
-        }
-
         json(res, 502, {
           error: "Не удалось получить погоду",
           code: "weather_fetch_failed",
