@@ -1,0 +1,38 @@
+[
+  {
+    "id": "35ac6f0b-c073-406e-a3d4-9df8ab0d75e4",
+    "nickname": "Bobrovski",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "c83ccd7d-c540-4893-8a1c-7a5ecd43e37e",
+    "role": "user",
+    "createdAt": "2026-05-26T13:44:51.120Z",
+    "updatedAt": "2026-05-26T13:44:51.120Z"
+  },
+  {
+    "id": "e3557064-ac99-4fff-9594-0aec4b157cc4",
+    "nickname": "Bobrovski",
+    "instagram": "https://instagram.com/bobrovski",
+    "vk": "https://vk.com",
+    "whatsapp": "777777",
+    "telegram": "https://telegram.com",
+    "sessionToken": "9626c0e6-f193-4f28-b123-d36386f4f70d",
+    "role": "user",
+    "createdAt": "2026-05-26T13:45:18.817Z",
+    "updatedAt": "2026-05-26T15:02:19.744Z"
+  },
+  {
+    "id": "b64ea6bc-2d1d-4033-9b6b-b36434e19027",
+    "nickname": "Bobrovski",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "5e6a0d1e-e7ee-4bf3-a841-1518e2a2dead",
+    "role": "user",
+    "createdAt": "2026-05-26T15:28:22.072Z",
+    "updatedAt": "2026-05-26T15:28:22.073Z"
+  }
+]
