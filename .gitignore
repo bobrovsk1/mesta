@@ -1,0 +1,29 @@
+# dependencies
+node_modules
+
+# env
+.env
+
+# uploads
+uploads
+
+# logs
+logs
+*.log
+
+# macOS
+.DS_Store
+
+# build
+dist
+build
+
+# vscode
+.vscode
+
+# pm2
+.pm2
+
+# temp
+tmp
+temp
