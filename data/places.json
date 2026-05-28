@@ -88,5 +88,35 @@
     "reviewStatus": "pending",
     "status": "published",
     "createdAt": "2026-05-27T02:36:51.145Z"
+  },
+  {
+    "id": 7,
+    "title": "тест сервера",
+    "image": "/uploads/1779889789842---------------2025-06-24---15-47-05.png",
+    "description": "Асти",
+    "routeDescription": "неизвестно",
+    "bestTransport": "самолет",
+    "lat": 62.055317121505574,
+    "lng": 129.64142025013197,
+    "createdBy": "147f8c45-2fe1-47b1-abb5-5e5c3f429c3e",
+    "createdByNickname": "Bobrovski",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-27T13:49:49.859Z"
+  },
+  {
+    "id": 8,
+    "title": "АСТА",
+    "image": "/uploads/1779943104712-image--2-.png",
+    "description": "ЖБ аьыыр сир, дьиикэ тоттум",
+    "routeDescription": "Сатыы",
+    "bestTransport": "На своих двоих",
+    "lat": 62.03079674649931,
+    "lng": 129.76360118776313,
+    "createdBy": "d129a297-f6f0-4ab2-8f54-9f7c533c1671",
+    "createdByNickname": "admin",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-28T04:38:24.713Z"
   }
 ]

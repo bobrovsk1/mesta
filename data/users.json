@@ -34,5 +34,101 @@
     "role": "user",
     "createdAt": "2026-05-26T15:28:22.072Z",
     "updatedAt": "2026-05-26T15:28:22.073Z"
+  },
+  {
+    "id": "147f8c45-2fe1-47b1-abb5-5e5c3f429c3e",
+    "nickname": "Bobrovski",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "d24de3bb-96f9-4462-9403-83e1644c2b55",
+    "role": "user",
+    "createdAt": "2026-05-27T13:39:51.022Z",
+    "updatedAt": "2026-05-27T13:39:51.022Z"
+  },
+  {
+    "id": "e2cb5467-340c-473e-943a-7560d04cc95d",
+    "nickname": "Bobrovski",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "32ad8164-046d-4fde-bbd0-25420a2358e1",
+    "role": "user",
+    "createdAt": "2026-05-27T14:25:20.316Z",
+    "updatedAt": "2026-05-27T14:25:20.316Z"
+  },
+  {
+    "id": "849aeaea-ca95-4aea-b163-b45dad52a204",
+    "nickname": "Валимак",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "920423eb-e5a8-4b31-81f3-819d88a46ae2",
+    "role": "user",
+    "createdAt": "2026-05-27T14:27:50.119Z",
+    "updatedAt": "2026-05-27T14:27:50.119Z"
+  },
+  {
+    "id": "2d37a912-da00-4ea0-a763-6d36c3e94b1c",
+    "nickname": "626363",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "fc57d190-b942-45e3-931c-9f87dbc3d788",
+    "role": "user",
+    "createdAt": "2026-05-27T15:57:33.127Z",
+    "updatedAt": "2026-05-27T15:57:33.127Z"
+  },
+  {
+    "id": "b3ecacbf-8688-45d5-9d8b-70b280e253db",
+    "nickname": "626363",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "8fb76554-97b4-4667-b398-3229f2b539f3",
+    "role": "user",
+    "createdAt": "2026-05-27T15:57:34.288Z",
+    "updatedAt": "2026-05-27T15:57:34.288Z"
+  },
+  {
+    "id": "dabfeb32-8540-4cf3-a983-8659a5aa7a26",
+    "nickname": "И",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "dc4559b0-55f2-47a2-9825-ae482c38a3a6",
+    "role": "user",
+    "createdAt": "2026-05-27T16:02:01.551Z",
+    "updatedAt": "2026-05-27T16:02:01.551Z"
+  },
+  {
+    "id": "5555e18e-7e82-460e-9900-a2842abfc7ef",
+    "nickname": "Yana",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "09a520d3-d9fb-4941-b218-63236eba0c6a",
+    "role": "user",
+    "createdAt": "2026-05-27T23:01:24.085Z",
+    "updatedAt": "2026-05-27T23:01:24.085Z"
+  },
+  {
+    "id": "d129a297-f6f0-4ab2-8f54-9f7c533c1671",
+    "nickname": "admin",
+    "instagram": "",
+    "vk": "",
+    "whatsapp": "",
+    "telegram": "",
+    "sessionToken": "238d940d-cedf-46b6-9f59-0b57b91d0cf4",
+    "role": "user",
+    "createdAt": "2026-05-28T04:37:09.487Z",
+    "updatedAt": "2026-05-28T04:37:09.487Z"
   }
 ]
