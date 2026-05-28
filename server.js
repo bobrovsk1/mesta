@@ -4,6 +4,7 @@ import http from "node:http";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +14,7 @@ const DATA_DIR = path.join(__dirname, "data");
 const DIST_DIR = path.join(__dirname, "dist");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const UPLOADS_DIR = path.join(__dirname, "uploads");
+const PLACE_UPLOADS_DIR = path.join(UPLOADS_DIR, "places");
 const WEATHER_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const files = {
@@ -404,25 +406,31 @@ async function saveUploadedImage(payload) {
 
   const mimeType = match[1];
   const base64 = match[2];
-  const extensionByMime = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-    "image/webp": ".webp",
-    "image/gif": ".gif",
-  };
-  const extension = extensionByMime[mimeType];
+  const supportedMimeTypes = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+  ]);
 
-  if (!extension) {
+  if (!supportedMimeTypes.has(mimeType)) {
     throw new Error("Поддерживаются JPG, PNG, WEBP и GIF");
   }
 
   const safeBaseName =
     imageName.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "-") || "image";
-  const fileName = `${Date.now()}-${safeBaseName}${extension}`;
-  const filePath = path.join(UPLOADS_DIR, fileName);
+  const fileName = `${Date.now()}-${safeBaseName}.webp`;
+  const filePath = path.join(PLACE_UPLOADS_DIR, fileName);
+  const sourceBuffer = Buffer.from(base64, "base64");
 
-  await fs.writeFile(filePath, Buffer.from(base64, "base64"));
-  return `/uploads/${fileName}`;
+  await fs.mkdir(PLACE_UPLOADS_DIR, { recursive: true });
+  await sharp(sourceBuffer)
+    .rotate()
+    .resize({ width: 1600, withoutEnlargement: true })
+    .webp({ quality: 75 })
+    .toFile(filePath);
+
+  return `/uploads/places/${fileName}`;
 }
 
 async function findUserByToken(token) {
