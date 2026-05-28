@@ -11,14 +11,27 @@
 - `data/places.json` — места, автор места, статусы модерации
 - `data/reactions.json` — лайки и дизлайки пользователей
 - `data/settings.json` — сезонная тема сайта для будущей админки
+- `uploads/places` — локально сохраненные и сжатые фото мест в `webp`
 
 ## Команды
 
 ```bash
+npm install
 npm run dev
 npm run build
 npm start
 ```
+
+## Загрузка фото
+
+- сервер сохраняет загруженные фото в `uploads/places`
+- папка создается автоматически
+- изображения сжимаются через `sharp`
+- формат хранения: `webp`
+- максимальная ширина: `1600px`
+- качество `webp`: `75`
+- в `data/places.json` хранится только путь вида `/uploads/places/file.webp`
+- `uploads` не попадает в git
 
 ## Погода Open-Meteo
 

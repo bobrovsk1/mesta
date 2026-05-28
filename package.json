@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Vite + React проект про интересные места Якутии",
+  "dependencies": {
+    "sharp": "^0.34.2"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node ../grv/node_modules/vite/bin/vite.js --host 127.0.0.1 --port 4322",
