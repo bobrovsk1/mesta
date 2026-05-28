@@ -36,6 +36,50 @@ function getPlaceImages(place) {
   return [];
 }
 
+<<<<<<< HEAD
+=======
+function formatWeatherHourLabel(unixSeconds, timezoneOffsetSeconds = 0) {
+  const shifted = new Date((unixSeconds + timezoneOffsetSeconds) * 1000);
+  const hours = String(shifted.getUTCHours()).padStart(2, "0");
+  const minutes = String(shifted.getUTCMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function normalizeOpenWeatherPayload(payload) {
+  const currentWeather = payload.current?.weather?.[0] || {};
+  const timezoneOffset = Number(payload.timezone_offset || 0);
+
+  return {
+    provider: "OpenWeatherMap",
+    timezoneOffset,
+    current: {
+      temp: Math.round(Number(payload.current?.temp ?? 0)),
+      windSpeed: Math.round(Number(payload.current?.wind_speed ?? 0)),
+      icon: currentWeather.icon
+        ? `https://openweathermap.org/img/wn/${currentWeather.icon}@2x.png`
+        : "",
+      description: String(currentWeather.description || "").trim(),
+      observedAt: payload.current?.dt || null,
+    },
+    hourly: Array.isArray(payload.hourly)
+      ? payload.hourly.slice(1, 4).map((item) => {
+          const weather = item.weather?.[0] || {};
+          return {
+            time: item.dt,
+            label: formatWeatherHourLabel(item.dt, timezoneOffset),
+            temp: Math.round(Number(item.temp ?? 0)),
+            windSpeed: Math.round(Number(item.wind_speed ?? 0)),
+            icon: weather.icon
+              ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png`
+              : "",
+            description: String(weather.description || "").trim(),
+          };
+        })
+      : [],
+  };
+}
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 function readSessionToken() {
   try {
     return window.localStorage.getItem(SESSION_STORAGE_KEY) || "";
@@ -398,12 +442,40 @@ function ReactionButtons({ place, userVote, onVote }) {
 }
 
 function WeatherCard({ weather, loading, error }) {
+<<<<<<< HEAD
+=======
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [weather?.current?.observedAt]);
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   const hasWeather = Boolean(weather?.current);
   const showPlaceholder = loading || (!hasWeather && !error);
 
   return (
+<<<<<<< HEAD
     <div className="weather-card overlay">
       <div className={`weather-chip${showPlaceholder ? " loading" : ""}${error ? " error" : ""}`}>
+=======
+    <div className={`weather-card overlay${expanded ? " expanded" : ""}`}>
+      <button
+        className={`weather-chip${showPlaceholder ? " loading" : ""}${error ? " error" : ""}`}
+        type="button"
+        onClick={() => {
+          if (hasWeather) {
+            setExpanded((current) => !current);
+          }
+        }}
+        aria-expanded={expanded}
+      >
+        {hasWeather && weather.current.icon ? (
+          <img className="weather-icon" src={weather.current.icon} alt={weather.current.description} />
+        ) : (
+          <span className="weather-fallback-icon">{error ? "!" : "○"}</span>
+        )}
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
         <span className="weather-main">
           {showPlaceholder ? (
             <>
@@ -422,7 +494,27 @@ function WeatherCard({ weather, loading, error }) {
             </>
           )}
         </span>
+<<<<<<< HEAD
       </div>
+=======
+        {hasWeather ? <span className="weather-toggle">{expanded ? "▴" : "▾"}</span> : null}
+      </button>
+
+      {expanded && hasWeather && Array.isArray(weather.hourly) ? (
+        <div className="weather-forecast">
+          {weather.hourly.map((hour) => (
+            <div className="weather-hour" key={hour.time}>
+              <span className="weather-hour-time">{hour.label}</span>
+              <div className="weather-hour-main">
+                {hour.icon ? <img className="weather-icon mini" src={hour.icon} alt={hour.description} /> : null}
+                <strong>{hour.temp}°C</strong>
+              </div>
+              <span className="weather-hour-wind">Ветер {hour.windSpeed} м/с</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     </div>
   );
 }
@@ -665,7 +757,10 @@ export default function App() {
   const [addPlaceModalOpen, setAddPlaceModalOpen] = useState(false);
   const [addPlaceForm, setAddPlaceForm] = useState(getEmptyPlace());
   const [isPickingOnMap, setIsPickingOnMap] = useState(false);
+<<<<<<< HEAD
   const [mapMountKey, setMapMountKey] = useState(0);
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   const [myPlacesOpen, setMyPlacesOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -675,6 +770,11 @@ export default function App() {
   const [weatherByPlace, setWeatherByPlace] = useState({});
   const [weatherLoadingId, setWeatherLoadingId] = useState(null);
   const [weatherErrorByPlace, setWeatherErrorByPlace] = useState({});
+<<<<<<< HEAD
+=======
+  const [weatherClientKey, setWeatherClientKey] = useState("");
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   const hasSession = Boolean(readSessionToken());
   const authRequired = !hasSession || !profile.nickname;
   const selectedPlace = useMemo(
@@ -701,6 +801,12 @@ export default function App() {
         const settings = await apiRequest("/api/settings/public");
         setTheme(settings.theme);
 
+<<<<<<< HEAD
+=======
+        const weatherConfig = await apiRequest("/api/weather/config");
+        setWeatherClientKey(weatherConfig.apiKey || "");
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
         const placesResponse = await apiRequest("/api/places");
         setPlaces(placesResponse.items);
         setSelectedPlaceId(placesResponse.items[0]?.id ?? null);
@@ -776,9 +882,12 @@ export default function App() {
       setIsPickingOnMap(false);
       pickModeRef.current = false;
       setAddPlaceModalOpen(true);
+<<<<<<< HEAD
       window.setTimeout(() => {
         remountMap();
       }, 0);
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     });
 
     mapRef.current = map;
@@ -788,7 +897,11 @@ export default function App() {
       mapRef.current = null;
       markersRef.current.clear();
     };
+<<<<<<< HEAD
   }, [mapMountKey]);
+=======
+  }, []);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -797,20 +910,38 @@ export default function App() {
 
     const map = mapRef.current;
     const refreshSize = () => {
+<<<<<<< HEAD
       map.invalidateSize({ pan: false });
     };
     const frame = window.requestAnimationFrame(refreshSize);
     const delayed = window.setTimeout(refreshSize, 120);
     const delayedLater = window.setTimeout(refreshSize, 320);
+=======
+      map.invalidateSize(true);
+      map.eachLayer((layer) => {
+        if (typeof layer.redraw === "function") {
+          layer.redraw();
+        }
+      });
+    };
+    const frame = window.requestAnimationFrame(refreshSize);
+    const delayed = window.setTimeout(refreshSize, 120);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     window.addEventListener("resize", refreshSize);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(delayed);
+<<<<<<< HEAD
       window.clearTimeout(delayedLater);
       window.removeEventListener("resize", refreshSize);
     };
   }, [places.length, selectedPlaceId, mapMarkerMode, loading, isPickingOnMap, addPlaceModalOpen, myPlacesOpen]);
+=======
+      window.removeEventListener("resize", refreshSize);
+    };
+  }, [places.length, selectedPlaceId, mapMarkerMode, loading]);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   useEffect(() => {
     const map = mapRef.current;
@@ -821,6 +952,11 @@ export default function App() {
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
 
+<<<<<<< HEAD
+=======
+    const bounds = [];
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     places.forEach((place) => {
       const previewImage = getPlaceImages(place)[0] || "";
       const icon = window.L.divIcon({
@@ -845,9 +981,12 @@ export default function App() {
       marker.on("click", () => {
         setSelectedPlaceId(place.id);
         setMyPlacesOpen(false);
+<<<<<<< HEAD
         window.requestAnimationFrame(() => {
           map.invalidateSize({ pan: false });
         });
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
       });
       marker.on("mouseover", () => {
         marker.getElement()?.querySelector(".map-place-marker")?.classList.add("hovered");
@@ -857,8 +996,18 @@ export default function App() {
       });
 
       markersRef.current.set(place.id, marker);
+<<<<<<< HEAD
     });
   }, [places, mapMarkerMode, mapMountKey]);
+=======
+      bounds.push([place.lat, place.lng]);
+    });
+
+    if (bounds.length) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [places, mapMarkerMode]);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
@@ -868,7 +1017,17 @@ export default function App() {
       }
     });
 
+<<<<<<< HEAD
   }, [selectedPlaceId, mapMountKey]);
+=======
+    if (selectedPlace && mapRef.current) {
+      mapRef.current.panTo([selectedPlace.lat, selectedPlace.lng], {
+        animate: true,
+        duration: 0.4,
+      });
+    }
+  }, [selectedPlace, selectedPlaceId]);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   useEffect(() => {
     if (!selectedPlace) {
@@ -895,10 +1054,53 @@ export default function App() {
           return next;
         });
       })
+<<<<<<< HEAD
       .catch((error) => {
         if (cancelled) {
           return;
         }
+=======
+      .catch(async (error) => {
+        if (cancelled) {
+          return;
+        }
+
+        if (weatherClientKey) {
+          try {
+            const url = new URL("https://api.openweathermap.org/data/3.0/onecall");
+            url.searchParams.set("lat", String(selectedPlace.lat));
+            url.searchParams.set("lon", String(selectedPlace.lng));
+            url.searchParams.set("appid", weatherClientKey);
+            url.searchParams.set("units", "metric");
+            url.searchParams.set("lang", "ru");
+            url.searchParams.set("exclude", "minutely,daily,alerts");
+
+            const response = await fetch(url);
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              throw new Error(payload?.message || "weather_fetch_failed");
+            }
+
+            if (cancelled) {
+              return;
+            }
+
+            setWeatherByPlace((current) => ({
+              ...current,
+              [cacheKey]: normalizeOpenWeatherPayload(payload),
+            }));
+            setWeatherErrorByPlace((current) => {
+              const next = { ...current };
+              delete next[cacheKey];
+              return next;
+            });
+            return;
+          } catch {
+            // fall through to standard error state
+          }
+        }
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
         setWeatherErrorByPlace((current) => ({
           ...current,
           [cacheKey]: error.message || "Ошибка погоды",
@@ -913,7 +1115,11 @@ export default function App() {
     return () => {
       cancelled = true;
     };
+<<<<<<< HEAD
   }, [selectedPlace, weatherByPlace]);
+=======
+  }, [selectedPlace, weatherByPlace, weatherClientKey]);
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   function openProfileEdit() {
     setProfileMenuOpen(false);
@@ -925,10 +1131,13 @@ export default function App() {
     setAddPlaceForm((current) => ({ ...current, [name]: value }));
   }
 
+<<<<<<< HEAD
   function remountMap() {
     setMapMountKey((current) => current + 1);
   }
 
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   function handlePlaceFileChange(event) {
     const file = event.target.files?.[0];
     if (!file) {
@@ -1033,7 +1242,10 @@ export default function App() {
       setAddPlaceForm(getEmptyPlace());
       setAddPlaceModalOpen(false);
       setMyPlacesOpen(true);
+<<<<<<< HEAD
       remountMap();
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     } catch (error) {
       setSubmitError(error.message || "Не удалось сохранить место");
     }
@@ -1079,11 +1291,15 @@ export default function App() {
       <main className="app-layout">
         <section className="map-column">
           <div className="map-card season-frame">
+<<<<<<< HEAD
             <div
               key={mapMountKey}
               className={`map-area${isPickingOnMap ? " picking" : ""}`}
               ref={mapContainerRef}
             >
+=======
+            <div className={`map-area${isPickingOnMap ? " picking" : ""}`} ref={mapContainerRef}>
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
               <div className="map-mode-toggle">
                 <button
                   className={`toggle-option${mapMarkerMode === "text" ? " active" : ""}`}
@@ -1180,14 +1396,20 @@ export default function App() {
             setIsPickingOnMap(false);
             pickModeRef.current = false;
             setSubmitError("");
+<<<<<<< HEAD
             remountMap();
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
           }}
           onStartPicking={() => {
             pickModeRef.current = true;
             setIsPickingOnMap(true);
             setAddPlaceModalOpen(false);
             setSubmitError("");
+<<<<<<< HEAD
             remountMap();
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
           }}
           isPicking={isPickingOnMap}
           submitError={submitError}

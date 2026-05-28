@@ -702,7 +702,11 @@ h2 {
 .weather-chip {
   display: inline-flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 0;
+=======
+  gap: 8px;
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   width: fit-content;
   min-height: 42px;
   padding: 6px 10px;
@@ -738,6 +742,64 @@ h2 {
   font-size: 12px;
 }
 
+<<<<<<< HEAD
+=======
+.weather-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.weather-fallback-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(36, 70, 59, 0.12);
+  color: var(--accent-deep);
+  font-weight: 800;
+}
+
+.weather-icon.mini {
+  width: 26px;
+  height: 26px;
+}
+
+.weather-toggle {
+  font-size: 12px;
+  color: var(--accent-deep);
+}
+
+.weather-forecast {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.weather-hour {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(53, 34, 22, 0.1);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+}
+
+.weather-hour-time {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent-deep);
+}
+
+.weather-hour-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 .reaction-strip {
   display: flex;
   align-items: center;

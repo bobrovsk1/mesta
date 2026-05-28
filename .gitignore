@@ -3,4 +3,7 @@ node_modules
 .env
 .env.local
 dist
+<<<<<<< HEAD
 uploads
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df

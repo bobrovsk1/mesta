@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "../grv/node_modules/vite/dist/node/index.js";
@@ -37,6 +38,17 @@ export default defineConfig({
         replacement: path.resolve(sharedNodeModules, "scheduler/index.js"),
       },
     ],
+=======
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  esbuild: {
+    jsx: "automatic"
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   },
   server: {
     host: "127.0.0.1",
@@ -44,6 +56,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://127.0.0.1:4323",
+<<<<<<< HEAD
         changeOrigin: true,
       },
     },
@@ -52,4 +65,14 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 4322,
   },
+=======
+        changeOrigin: true
+      }
+    }
+  },
+  preview: {
+    host: "127.0.0.1",
+    port: 4322
+  }
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 });

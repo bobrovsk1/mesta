@@ -4,7 +4,10 @@ import http from "node:http";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+<<<<<<< HEAD
 import sharp from "sharp";
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +17,10 @@ const DATA_DIR = path.join(__dirname, "data");
 const DIST_DIR = path.join(__dirname, "dist");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const UPLOADS_DIR = path.join(__dirname, "uploads");
+<<<<<<< HEAD
 const PLACE_UPLOADS_DIR = path.join(UPLOADS_DIR, "places");
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 const WEATHER_CACHE_TTL_MS = 10 * 60 * 1000;
 
 const files = {
@@ -38,6 +44,7 @@ const contentTypes = {
 };
 
 const weatherCache = new Map();
+<<<<<<< HEAD
 const OPEN_METEO_WEATHER_CODES = {
   0: "Ясно",
   1: "Преимущественно ясно",
@@ -68,6 +75,8 @@ const OPEN_METEO_WEATHER_CODES = {
   96: "Гроза с небольшим градом",
   99: "Гроза с сильным градом",
 };
+=======
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
 function loadEnvFile(filePath) {
   if (!fssync.existsSync(filePath)) {
@@ -98,6 +107,12 @@ function loadEnvFile(filePath) {
 loadEnvFile(path.join(__dirname, ".env"));
 loadEnvFile(path.join(__dirname, ".env.local"));
 
+<<<<<<< HEAD
+=======
+const OPENWEATHER_API_KEY =
+  process.env.OPENWEATHER_API_KEY || process.env.OPENWEATHERMAP_API_KEY || "";
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 const seedPlaces = [
   {
     id: 1,
@@ -263,7 +278,11 @@ function readBody(req) {
     let raw = "";
     req.on("data", (chunk) => {
       raw += chunk;
+<<<<<<< HEAD
       if (raw.length > 2_000_000) {
+=======
+      if (raw.length > 50_000_000) {
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
         reject(new Error("Payload too large"));
         req.destroy();
       }
@@ -303,6 +322,7 @@ function ensureFiniteCoordinate(value, label) {
   return number;
 }
 
+<<<<<<< HEAD
 function formatOpenMeteoHourLabel(isoString) {
   const value = cleanString(isoString);
   const timePart = value.split("T")[1] || "";
@@ -311,6 +331,13 @@ function formatOpenMeteoHourLabel(isoString) {
 
 function getOpenMeteoWeatherDescription(code) {
   return OPEN_METEO_WEATHER_CODES[Number(code)] || "Неизвестная погода";
+=======
+function formatHourLabel(unixSeconds, timezoneOffsetSeconds) {
+  const shifted = new Date((unixSeconds + timezoneOffsetSeconds) * 1000);
+  const hours = String(shifted.getUTCHours()).padStart(2, "0");
+  const minutes = String(shifted.getUTCMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 }
 
 function isValidUrl(value) {
@@ -406,6 +433,7 @@ async function saveUploadedImage(payload) {
 
   const mimeType = match[1];
   const base64 = match[2];
+<<<<<<< HEAD
   const supportedMimeTypes = new Set([
     "image/jpeg",
     "image/png",
@@ -414,11 +442,23 @@ async function saveUploadedImage(payload) {
   ]);
 
   if (!supportedMimeTypes.has(mimeType)) {
+=======
+  const extensionByMime = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+  };
+  const extension = extensionByMime[mimeType];
+
+  if (!extension) {
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     throw new Error("Поддерживаются JPG, PNG, WEBP и GIF");
   }
 
   const safeBaseName =
     imageName.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "-") || "image";
+<<<<<<< HEAD
   const fileName = `${Date.now()}-${safeBaseName}.webp`;
   const filePath = path.join(PLACE_UPLOADS_DIR, fileName);
   const sourceBuffer = Buffer.from(base64, "base64");
@@ -431,6 +471,13 @@ async function saveUploadedImage(payload) {
     .toFile(filePath);
 
   return `/uploads/places/${fileName}`;
+=======
+  const fileName = `${Date.now()}-${safeBaseName}${extension}`;
+  const filePath = path.join(UPLOADS_DIR, fileName);
+
+  await fs.writeFile(filePath, Buffer.from(base64, "base64"));
+  return `/uploads/${fileName}`;
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 }
 
 async function findUserByToken(token) {
@@ -487,12 +534,20 @@ async function buildPlacesResponse(userId) {
 }
 
 async function fetchWeatherByCoords(lat, lng) {
+<<<<<<< HEAD
+=======
+  if (!OPENWEATHER_API_KEY) {
+    throw new Error("WEATHER_NOT_CONFIGURED");
+  }
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   const cacheKey = `${lat.toFixed(3)}:${lng.toFixed(3)}`;
   const cached = weatherCache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.data;
   }
 
+<<<<<<< HEAD
   const weatherUrl = new URL("https://api.open-meteo.com/v1/forecast");
   weatherUrl.searchParams.set("latitude", String(lat));
   weatherUrl.searchParams.set("longitude", String(lng));
@@ -507,6 +562,15 @@ async function fetchWeatherByCoords(lat, lng) {
   weatherUrl.searchParams.set("forecast_days", "1");
   weatherUrl.searchParams.set("timezone", "auto");
   weatherUrl.searchParams.set("wind_speed_unit", "ms");
+=======
+  const weatherUrl = new URL("https://api.openweathermap.org/data/3.0/onecall");
+  weatherUrl.searchParams.set("lat", String(lat));
+  weatherUrl.searchParams.set("lon", String(lng));
+  weatherUrl.searchParams.set("appid", OPENWEATHER_API_KEY);
+  weatherUrl.searchParams.set("units", "metric");
+  weatherUrl.searchParams.set("lang", "ru");
+  weatherUrl.searchParams.set("exclude", "minutely,daily,alerts");
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
 
   const response = await fetch(weatherUrl);
   const payload = await response.json().catch(() => ({}));
@@ -515,6 +579,7 @@ async function fetchWeatherByCoords(lat, lng) {
     throw new Error(payload?.message || "WEATHER_FETCH_FAILED");
   }
 
+<<<<<<< HEAD
   const hourlyTimes = Array.isArray(payload.hourly?.time) ? payload.hourly.time : [];
   const hourlyTemps = Array.isArray(payload.hourly?.temperature_2m)
     ? payload.hourly.temperature_2m
@@ -552,6 +617,37 @@ async function fetchWeatherByCoords(lat, lng) {
       observedAt: currentTime || null,
     },
     hourly,
+=======
+  const currentWeather = payload.current?.weather?.[0] || {};
+  const timezoneOffset = Number(payload.timezone_offset || 0);
+  const normalized = {
+    provider: "OpenWeatherMap",
+    timezoneOffset,
+    current: {
+      temp: Math.round(Number(payload.current?.temp ?? 0)),
+      windSpeed: Math.round(Number(payload.current?.wind_speed ?? 0)),
+      icon: currentWeather.icon
+        ? `https://openweathermap.org/img/wn/${currentWeather.icon}@2x.png`
+        : "",
+      description: cleanString(currentWeather.description),
+      observedAt: payload.current?.dt || null,
+    },
+    hourly: Array.isArray(payload.hourly)
+      ? payload.hourly.slice(1, 4).map((item) => {
+          const weather = item.weather?.[0] || {};
+          return {
+            time: item.dt,
+            label: formatHourLabel(item.dt, timezoneOffset),
+            temp: Math.round(Number(item.temp ?? 0)),
+            windSpeed: Math.round(Number(item.wind_speed ?? 0)),
+            icon: weather.icon
+              ? `https://openweathermap.org/img/wn/${weather.icon}@2x.png`
+              : "",
+            description: cleanString(weather.description),
+          };
+        })
+      : [],
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
   };
 
   weatherCache.set(cacheKey, {
@@ -593,6 +689,17 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+<<<<<<< HEAD
+=======
+    if (req.method === "GET" && pathname === "/api/weather/config") {
+      json(res, 200, {
+        hasApiKey: Boolean(OPENWEATHER_API_KEY),
+        apiKey: OPENWEATHER_API_KEY || "",
+      });
+      return;
+    }
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
     if (req.method === "GET" && pathname === "/api/weather") {
       const lat = ensureFiniteCoordinate(url.searchParams.get("lat"), "широта");
       const lng = ensureFiniteCoordinate(url.searchParams.get("lng"), "долгота");
@@ -601,6 +708,17 @@ const server = http.createServer(async (req, res) => {
         const weather = await fetchWeatherByCoords(lat, lng);
         json(res, 200, weather);
       } catch (error) {
+<<<<<<< HEAD
+=======
+        if (error.message === "WEATHER_NOT_CONFIGURED") {
+          json(res, 503, {
+            error: "Погода на сервере пока не настроена",
+            code: "weather_not_configured",
+          });
+          return;
+        }
+
+>>>>>>> 788d3a52fe4e5b7afbb71a0a6dd6bd2ba23db7df
         json(res, 502, {
           error: "Не удалось получить погоду",
           code: "weather_fetch_failed",
