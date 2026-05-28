@@ -398,32 +398,12 @@ function ReactionButtons({ place, userVote, onVote }) {
 }
 
 function WeatherCard({ weather, loading, error }) {
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    setExpanded(false);
-  }, [weather?.current?.observedAt]);
-
   const hasWeather = Boolean(weather?.current);
   const showPlaceholder = loading || (!hasWeather && !error);
 
   return (
-    <div className={`weather-card overlay${expanded ? " expanded" : ""}`}>
-      <button
-        className={`weather-chip${showPlaceholder ? " loading" : ""}${error ? " error" : ""}`}
-        type="button"
-        onClick={() => {
-          if (hasWeather) {
-            setExpanded((current) => !current);
-          }
-        }}
-        aria-expanded={expanded}
-      >
-        {hasWeather && weather.current.icon ? (
-          <img className="weather-icon" src={weather.current.icon} alt={weather.current.description} />
-        ) : (
-          <span className="weather-fallback-icon">{error ? "!" : "○"}</span>
-        )}
+    <div className="weather-card overlay">
+      <div className={`weather-chip${showPlaceholder ? " loading" : ""}${error ? " error" : ""}`}>
         <span className="weather-main">
           {showPlaceholder ? (
             <>
@@ -442,23 +422,7 @@ function WeatherCard({ weather, loading, error }) {
             </>
           )}
         </span>
-        {hasWeather ? <span className="weather-toggle">{expanded ? "▴" : "▾"}</span> : null}
-      </button>
-
-      {expanded && hasWeather && Array.isArray(weather.hourly) ? (
-        <div className="weather-forecast">
-          {weather.hourly.map((hour) => (
-            <div className="weather-hour" key={hour.time}>
-              <span className="weather-hour-time">{hour.label}</span>
-              <div className="weather-hour-main">
-                {hour.icon ? <img className="weather-icon mini" src={hour.icon} alt={hour.description} /> : null}
-                <strong>{hour.temp}°C</strong>
-              </div>
-              <span className="weather-hour-wind">Ветер {hour.windSpeed} м/с</span>
-            </div>
-          ))}
-        </div>
-      ) : null}
+      </div>
     </div>
   );
 }
@@ -701,6 +665,7 @@ export default function App() {
   const [addPlaceModalOpen, setAddPlaceModalOpen] = useState(false);
   const [addPlaceForm, setAddPlaceForm] = useState(getEmptyPlace());
   const [isPickingOnMap, setIsPickingOnMap] = useState(false);
+  const [mapMountKey, setMapMountKey] = useState(0);
   const [myPlacesOpen, setMyPlacesOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -811,6 +776,9 @@ export default function App() {
       setIsPickingOnMap(false);
       pickModeRef.current = false;
       setAddPlaceModalOpen(true);
+      window.setTimeout(() => {
+        remountMap();
+      }, 0);
     });
 
     mapRef.current = map;
@@ -820,7 +788,7 @@ export default function App() {
       mapRef.current = null;
       markersRef.current.clear();
     };
-  }, []);
+  }, [mapMountKey]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -829,23 +797,20 @@ export default function App() {
 
     const map = mapRef.current;
     const refreshSize = () => {
-      map.invalidateSize(true);
-      map.eachLayer((layer) => {
-        if (typeof layer.redraw === "function") {
-          layer.redraw();
-        }
-      });
+      map.invalidateSize({ pan: false });
     };
     const frame = window.requestAnimationFrame(refreshSize);
     const delayed = window.setTimeout(refreshSize, 120);
+    const delayedLater = window.setTimeout(refreshSize, 320);
     window.addEventListener("resize", refreshSize);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(delayed);
+      window.clearTimeout(delayedLater);
       window.removeEventListener("resize", refreshSize);
     };
-  }, [places.length, selectedPlaceId, mapMarkerMode, loading]);
+  }, [places.length, selectedPlaceId, mapMarkerMode, loading, isPickingOnMap, addPlaceModalOpen, myPlacesOpen]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -855,8 +820,6 @@ export default function App() {
 
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
-
-    const bounds = [];
 
     places.forEach((place) => {
       const previewImage = getPlaceImages(place)[0] || "";
@@ -882,6 +845,9 @@ export default function App() {
       marker.on("click", () => {
         setSelectedPlaceId(place.id);
         setMyPlacesOpen(false);
+        window.requestAnimationFrame(() => {
+          map.invalidateSize({ pan: false });
+        });
       });
       marker.on("mouseover", () => {
         marker.getElement()?.querySelector(".map-place-marker")?.classList.add("hovered");
@@ -891,13 +857,8 @@ export default function App() {
       });
 
       markersRef.current.set(place.id, marker);
-      bounds.push([place.lat, place.lng]);
     });
-
-    if (bounds.length) {
-      map.fitBounds(bounds, { padding: [40, 40] });
-    }
-  }, [places, mapMarkerMode]);
+  }, [places, mapMarkerMode, mapMountKey]);
 
   useEffect(() => {
     markersRef.current.forEach((marker, id) => {
@@ -907,13 +868,7 @@ export default function App() {
       }
     });
 
-    if (selectedPlace && mapRef.current) {
-      mapRef.current.panTo([selectedPlace.lat, selectedPlace.lng], {
-        animate: true,
-        duration: 0.4,
-      });
-    }
-  }, [selectedPlace, selectedPlaceId]);
+  }, [selectedPlaceId, mapMountKey]);
 
   useEffect(() => {
     if (!selectedPlace) {
@@ -968,6 +923,10 @@ export default function App() {
   function handlePlaceFormChange(event) {
     const { name, value } = event.target;
     setAddPlaceForm((current) => ({ ...current, [name]: value }));
+  }
+
+  function remountMap() {
+    setMapMountKey((current) => current + 1);
   }
 
   function handlePlaceFileChange(event) {
@@ -1074,6 +1033,7 @@ export default function App() {
       setAddPlaceForm(getEmptyPlace());
       setAddPlaceModalOpen(false);
       setMyPlacesOpen(true);
+      remountMap();
     } catch (error) {
       setSubmitError(error.message || "Не удалось сохранить место");
     }
@@ -1119,7 +1079,11 @@ export default function App() {
       <main className="app-layout">
         <section className="map-column">
           <div className="map-card season-frame">
-            <div className={`map-area${isPickingOnMap ? " picking" : ""}`} ref={mapContainerRef}>
+            <div
+              key={mapMountKey}
+              className={`map-area${isPickingOnMap ? " picking" : ""}`}
+              ref={mapContainerRef}
+            >
               <div className="map-mode-toggle">
                 <button
                   className={`toggle-option${mapMarkerMode === "text" ? " active" : ""}`}
@@ -1216,12 +1180,14 @@ export default function App() {
             setIsPickingOnMap(false);
             pickModeRef.current = false;
             setSubmitError("");
+            remountMap();
           }}
           onStartPicking={() => {
             pickModeRef.current = true;
             setIsPickingOnMap(true);
             setAddPlaceModalOpen(false);
             setSubmitError("");
+            remountMap();
           }}
           isPicking={isPickingOnMap}
           submitError={submitError}

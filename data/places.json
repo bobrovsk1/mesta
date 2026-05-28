@@ -88,5 +88,50 @@
     "reviewStatus": "pending",
     "status": "published",
     "createdAt": "2026-05-27T02:36:51.145Z"
+  },
+  {
+    "id": 7,
+    "title": "йо",
+    "image": "/uploads/1779946506583---------------2026-04-20---15-03-23.png",
+    "description": "е",
+    "routeDescription": "н",
+    "bestTransport": "н",
+    "lat": 62.02192184216312,
+    "lng": 129.70875420810856,
+    "createdBy": "b64ea6bc-2d1d-4033-9b6b-b36434e19027",
+    "createdByNickname": "Bobrovski",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-28T05:35:06.590Z"
+  },
+  {
+    "id": 8,
+    "title": "тест",
+    "image": "/uploads/1779946890497---------------2026-04-20---15-14-14.png",
+    "description": "йоу",
+    "routeDescription": "йойо",
+    "bestTransport": "аолл",
+    "lat": 62.06363945296976,
+    "lng": 129.74362298133656,
+    "createdBy": "b64ea6bc-2d1d-4033-9b6b-b36434e19027",
+    "createdByNickname": "Bobrovski",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-28T05:41:30.501Z"
+  },
+  {
+    "id": 9,
+    "title": "ыап",
+    "image": "/uploads/1779947151604---------------2026-04-20---16-53-06.png",
+    "description": "кец",
+    "routeDescription": "цк",
+    "bestTransport": "цке",
+    "lat": 61.98813866344422,
+    "lng": 129.71153900559898,
+    "createdBy": "b64ea6bc-2d1d-4033-9b6b-b36434e19027",
+    "createdByNickname": "Bobrovski",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-28T05:45:51.611Z"
   }
 ]
