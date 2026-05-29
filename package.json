@@ -6,7 +6,7 @@
   "description": "Vite + React проект про интересные места Якутии",
   "scripts": {
     "start": "node server.js",
-    "dev": "node ../grv/node_modules/vite/bin/vite.js --host 127.0.0.1 --port 4322",
+    "dev": "vite --host 127.0.0.1 --port 4322",
     "build": "vite build",
     "preview": "node server.js"
   },
@@ -14,7 +14,12 @@
     "vite": "^8.0.14"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
+    "pg": "^8.21.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "sharp": "^0.34.5"
   }
 }

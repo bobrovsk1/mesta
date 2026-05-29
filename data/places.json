@@ -118,5 +118,20 @@
     "reviewStatus": "pending",
     "status": "published",
     "createdAt": "2026-05-28T04:38:24.713Z"
+  },
+  {
+    "id": 9,
+    "title": "asd",
+    "image": "/uploads/1780031701007----------------.jpg",
+    "description": "qwe",
+    "routeDescription": "asd",
+    "bestTransport": "zxc",
+    "lat": 62.044320304105696,
+    "lng": 129.65438078577085,
+    "createdBy": "712dc8ac-459e-4d45-8e39-483867f44ba1",
+    "createdByNickname": "Bobrovski",
+    "reviewStatus": "pending",
+    "status": "published",
+    "createdAt": "2026-05-29T05:15:01.009Z"
   }
 ]

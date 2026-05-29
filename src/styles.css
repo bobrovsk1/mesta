@@ -253,6 +253,15 @@ h2 {
   gap: 4px;
 }
 
+.profile-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 18px rgba(67, 41, 24, 0.18);
+}
+
 .profile-links,
 .my-places-list {
   display: grid;
@@ -485,6 +494,16 @@ h2 {
 .toggle-option.active {
   background: linear-gradient(180deg, var(--accent), var(--accent-deep));
   color: #fff;
+}
+
+.auth-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 253, 250, 0.94);
+  border: 1px solid rgba(53, 34, 22, 0.12);
 }
 
 .map-area.picking {
